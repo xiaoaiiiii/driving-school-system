@@ -1,0 +1,32 @@
+{
+  "name": "driving-school-backend",
+  "version": "1.0.0",
+  "description": "驾校约课系统后端",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "migrate": "node migrate.js",
+    "migrate:update": "node migrate-update.js",
+    "prepare-data": "node prepare-test-data.js",
+    "test:booking": "node test-booking.js",
+    "test:instructor": "node test-instructor.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.13.5",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.6.5",
+    "sequelize": "^6.37.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
