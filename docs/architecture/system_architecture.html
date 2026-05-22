@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>驾校在线约课系统 · 系统架构图</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f172a;
+    --bg2: #1e293b;
+    --user: #fb923c;
+    --front: #22d3ee;
+    --back: #818cf8;
+    --data: #f472b6;
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --text-dark: #0f172a;
+    --text-mid: #475569;
+    --text-light: #94a3b8;
+    --line: #e2e8f0;
+  }
+  html, body { width: 100%; height: 100%; overflow: hidden; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue",
+      "Microsoft YaHei", sans-serif;
+    background: linear-gradient(135deg, var(--bg), var(--bg2));
+    color: var(--text-dark);
+    display: flex;
+    flex-direction: column;
+    padding: 18px 28px;
+    gap: 10px;
+  }
+  header {
+    color: #fff;
+    text-align: center;
+    flex: 0 0 auto;
+  }
+  header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 4px;
+  }
+  header p {
+    font-size: 13px;
+    opacity: 0.6;
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  .stage {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 0;
+  }
+
+  .layer {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 10px 16px 12px;
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    position: relative;
+  }
+  .layer::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 14px; bottom: 14px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+  }
+  .layer.user::before  { background: var(--user); }
+  .layer.front::before { background: var(--front); }
+  .layer.back::before  { background: var(--back); }
+  .layer.data::before  { background: var(--data); }
+
+  .layer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .layer-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .layer-title .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .layer.user .dot  { background: var(--user); }
+  .layer.front .dot { background: var(--front); }
+  .layer.back .dot  { background: var(--back); }
+  .layer.data .dot  { background: var(--data); }
+  .layer-title .name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+  .layer-title .en {
+    font-size: 13px;
+    color: var(--text-light);
+    letter-spacing: 0.5px;
+  }
+  .layer-tag {
+    font-size: 13px;
+    color: var(--text-light);
+  }
+
+  .body {
+    flex: 1 1 auto;
+    display: grid;
+    gap: 8px;
+    min-height: 0;
+  }
+  .body.g3 { grid-template-columns: repeat(3, 1fr); }
+  .body.g4 { grid-template-columns: repeat(4, 1fr); }
+  .body.g5 { grid-template-columns: repeat(5, 1fr); }
+
+  .card {
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 0;
+  }
+  .card .t {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 3px;
+  }
+  .card .d {
+    font-size: 11px;
+    color: var(--text-mid);
+    line-height: 1.45;
+  }
+
+  .connector {
+    flex: 0 0 auto;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 10px;
+    letter-spacing: 1px;
+    height: 14px;
+    line-height: 14px;
+    position: relative;
+  }
+  .connector::before, .connector::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 38%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  }
+  .connector::before { left: 0; }
+  .connector::after  { right: 0; }
+  .connector b { color: #fff; font-weight: 500; }
+
+  @media (max-width: 1100px) {
+    .body.g4, .body.g5 { grid-template-columns: repeat(3, 1fr); }
+    .body.g5 .card:nth-child(n+4) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>驾校在线约课系统  ·  系统架构图</h1>
+  <p>Vue 3 + Express + MySQL  ·  四层分层架构</p>
+</header>
+
+<div class="stage">
+
+  <!-- 用户层 -->
+  <section class="layer user">
+    <div class="layer-head">
+      <div class="layer-title">
+        <span class="dot"></span>
+        <span class="name">用户接入层</span>
+        <span class="en">User Layer</span>
+      </div>
+      <span class="layer-tag">Browser / Web Client</span>
+    </div>
+    <div class="body g3">
+      <div class="card">
+        <div class="t">学员 Student</div>
+        <div class="d">浏览课程 · 在线预约 · 查看与取消预约</div>
+      </div>
+      <div class="card">
+        <div class="t">教练 Instructor</div>
+        <div class="d">查看排课 · 管理预约 · 确认到课/缺席</div>
+      </div>
+      <div class="card">
+        <div class="t">管理员 Admin</div>
+        <div class="d">课程管理 · 用户管理 · 预约管理</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="connector">HTTP / HTTPS  ·  JSON  ·  <b>↓</b></div>
+
+  <!-- 前端层 -->
+  <section class="layer front">
+    <div class="layer-head">
+      <div class="layer-title">
+        <span class="dot"></span>
+        <span class="name">前端展现层</span>
+        <span class="en">Frontend (Vue 3 SPA)</span>
+      </div>
+      <span class="layer-tag">Vite Dev Server : 5173</span>
+    </div>
+    <div class="body g4">
+      <div class="card">
+        <div class="t">Pages 页面</div>
+        <div class="d">Login · CourseList · MyAppointments · Admin · InstructorCourses</div>
+      </div>
+      <div class="card">
+        <div class="t">Router 路由</div>
+        <div class="d">Vue Router 4 · Hash 模式 · 角色守卫 beforeEach</div>
+      </div>
+      <div class="card">
+        <div class="t">Stores 状态</div>
+        <div class="d">Pinia · user store · token / userInfo 持久化</div>
+      </div>
+      <div class="card">
+        <div class="t">Services API</div>
+        <div class="d">Axios 封装 · 拦截器自动注入 Bearer Token</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="connector">RESTful  ·  <b>JWT Bearer Token</b>  ·  /api/*  ·  <b>↓</b></div>
+
+  <!-- 后端层 -->
+  <section class="layer back">
+    <div class="layer-head">
+      <div class="layer-title">
+        <span class="dot"></span>
+        <span class="name">后端服务层</span>
+        <span class="en">Backend (Node.js + Express, MVC)</span>
+      </div>
+      <span class="layer-tag">Express Server : 3002</span>
+    </div>
+    <div class="body g5">
+      <div class="card">
+        <div class="t">Middleware</div>
+        <div class="d">auth · checkRole · cors · errorHandler · validator</div>
+      </div>
+      <div class="card">
+        <div class="t">Routes</div>
+        <div class="d">/auth · /courses · /appointments · /admin · /instructor</div>
+      </div>
+      <div class="card">
+        <div class="t">Controllers</div>
+        <div class="d">auth · course · appointment · admin · instructor</div>
+      </div>
+      <div class="card">
+        <div class="t">Services</div>
+        <div class="d">authService · courseService · appointmentService</div>
+      </div>
+      <div class="card">
+        <div class="t">Models</div>
+        <div class="d">User · Course · Appointment · Booking</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="connector">mysql2 连接池  ·  事务 + FOR UPDATE 行锁  ·  <b>↓</b></div>
+
+  <!-- 数据层 -->
+  <section class="layer data">
+    <div class="layer-head">
+      <div class="layer-title">
+        <span class="dot"></span>
+        <span class="name">数据持久层</span>
+        <span class="en">Database (MySQL 8.0)</span>
+      </div>
+      <span class="layer-tag">utf8mb4 · InnoDB · TZ +08:00</span>
+    </div>
+    <div class="body g3">
+      <div class="card">
+        <div class="t">Users 用户表</div>
+        <div class="d">id · username · password · role · phone · status</div>
+      </div>
+      <div class="card">
+        <div class="t">Courses 课程表</div>
+        <div class="d">id · title · subject · coach_id · start_time · stock · version</div>
+      </div>
+      <div class="card">
+        <div class="t">Appointments 预约表</div>
+        <div class="d">id · user_id · course_id · status · uk_user_course 唯一索引</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+</body>
+</html>

@@ -13,12 +13,14 @@ CREATE TABLE IF NOT EXISTS `Users` (
   `role` ENUM('admin', 'coach', 'student') NOT NULL COMMENT '角色权限',
   `subject_progress` TINYINT NULL COMMENT '当前科目进度:0=科目二,1=科目三',
   `remaining_hours` INT NOT NULL DEFAULT 0 COMMENT '剩余可用课时余额',
+  `status` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '状态:1=启用,0=禁用',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `uk_username` (`username`),
   UNIQUE KEY `uk_phone` (`phone`),
-  KEY `idx_role` (`role`)
+  KEY `idx_role` (`role`),
+  KEY `idx_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户信息表';
 
 -- 课程信息表（Courses）

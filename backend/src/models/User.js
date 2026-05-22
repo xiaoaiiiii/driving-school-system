@@ -10,7 +10,7 @@ class User {
               phone, 
               password, 
               role, 
-              1 as status, 
+              status, 
               subject_progress,
               remaining_hours,
               created_at as create_time 
@@ -30,7 +30,7 @@ class User {
               phone, 
               password, 
               role, 
-              1 as status, 
+              status, 
               subject_progress,
               remaining_hours,
               created_at as create_time 

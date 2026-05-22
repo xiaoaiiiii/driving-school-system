@@ -11,16 +11,22 @@ class AuthService {
       const user = await User.findByUsername(username)
 
       if (!user) {
-        throw new Error('用户名或密码错误')
+        const err = new Error('用户名或密码错误')
+        err.isBusiness = true
+        throw err
       }
 
       const isPasswordValid = await bcrypt.compare(password, user.password)
       if (!isPasswordValid) {
-        throw new Error('用户名或密码错误')
+        const err = new Error('用户名或密码错误')
+        err.isBusiness = true
+        throw err
       }
 
       if (!user.status) {
-        throw new Error('账号已被禁用')
+        const err = new Error('账号已被禁用')
+        err.isBusiness = true
+        throw err
       }
 
       // 确保角色兼容性，同时支持 instructor 和 coach
@@ -45,6 +51,10 @@ class AuthService {
         userInfo
       }
     } catch (error) {
+      // 业务错误（用户名错/密码错/账号禁用）直接抛出，不要走 mock 兜底
+      if (error && error.isBusiness) {
+        throw error
+      }
       console.log('数据库登录失败，使用mock数据:', error.message)
       
       // 使用共享的 mock 数据

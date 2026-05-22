@@ -131,14 +131,30 @@ class AppointmentService {
           }
         }
         
-        // 创建预约
-        console.log('在数据库中创建预约...')
-        const [bookingResult] = await connection.query(
-          'INSERT INTO Bookings (student_id, course_id, status) VALUES (?, ?, "booked")',
+        // 兼容唯一键 uk_student_course：若该学员对该课程曾有 cancelled 记录，复用该行 UPDATE 而非 INSERT
+        const [existingRows] = await connection.query(
+          'SELECT booking_id as id FROM Bookings WHERE student_id = ? AND course_id = ?',
           [userId, courseId]
         )
-        const newAppointmentId = bookingResult.insertId
-        console.log('数据库预约创建成功，ID:', newAppointmentId)
+
+        let newAppointmentId
+        if (existingRows.length > 0) {
+          newAppointmentId = existingRows[0].id
+          console.log('找到旧的 cancelled 预约，复用 booking_id:', newAppointmentId)
+          await connection.query(
+            'UPDATE Bookings SET status = "booked", created_at = CURRENT_TIMESTAMP WHERE booking_id = ?',
+            [newAppointmentId]
+          )
+        } else {
+          // 创建预约
+          console.log('在数据库中创建预约...')
+          const [bookingResult] = await connection.query(
+            'INSERT INTO Bookings (student_id, course_id, status) VALUES (?, ?, "booked")',
+            [userId, courseId]
+          )
+          newAppointmentId = bookingResult.insertId
+          console.log('数据库预约创建成功，ID:', newAppointmentId)
+        }
         
         // 更新课程名额和用户课时
         console.log('更新数据库中的课程名额和用户课时...')

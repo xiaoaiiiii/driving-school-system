@@ -2,6 +2,7 @@ import axios from 'axios'
 import router from '@/router'
 import { message } from 'ant-design-vue'
 import { useUserStore } from '@/stores/user'
+import { normalizeEncoding } from '@/utils/encoding'
 
 const request = (opt = {}) => {
   const { baseURL = '/api', path = '' } = opt
@@ -28,17 +29,20 @@ const request = (opt = {}) => {
   srv.interceptors.response.use(
     response => {
       const { respCode, respData, respMsg } = response.data
+      const data = normalizeEncoding(respData)
+      const msg = normalizeEncoding(respMsg)
+
       if (respCode === '00000') {
-        return respData
+        return data
       } else if (respCode === '10001') {
         message.error('登录已过期，请重新登录')
         const userStore = useUserStore()
         userStore.logout()
         router.push('/login')
-        return Promise.reject(respMsg)
+        return Promise.reject(msg)
       } else {
-        message.error(respMsg || '请求失败')
-        return Promise.reject(respMsg)
+        message.error(msg || '请求失败')
+        return Promise.reject(msg)
       }
     },
     error => {

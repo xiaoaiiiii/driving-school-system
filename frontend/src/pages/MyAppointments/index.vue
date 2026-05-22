@@ -39,7 +39,8 @@
             type="danger"
             size="small"
             @click="handleCancel(item)"
-            :disabled="isCancelDisabled(item)"
+            :disabled="isCancelDisabled(item) || cancellingIds.has(item.id)"
+            :loading="cancellingIds.has(item.id)"
           >
             取消预约
           </Button>
@@ -63,6 +64,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons-vue'
 const loading = ref(false)
 const appointmentList = ref([])
 const selectedStatus = ref(undefined)
+const cancellingIds = ref(new Set())
 
 const columns = [
   { key: 'course_name', title: '课程名称', width: '200px' },
@@ -121,12 +123,17 @@ const isCancelDisabled = (item) => {
 }
 
 const handleCancel = async (item) => {
+  if (cancellingIds.value.has(item.id)) return
+  cancellingIds.value.add(item.id)
   try {
     await courseApi.cancel(item.id)
     message.success('取消预约成功')
     fetchAppointments()
   } catch (error) {
-    message.error(error.message || '取消失败')
+    // request 拦截器已经对非 00000 弹过 message.error，这里不再重复提示
+    console.error('取消预约失败:', error)
+  } finally {
+    cancellingIds.value.delete(item.id)
   }
 }
 
